@@ -1,0 +1,29 @@
+<div class="container-fluid card login-container">
+  <h1 class="header">Sign In</h1>
+  @if (errorMessage.length) {
+    <div class="alert alert-danger errors-danger" role="alert">
+      @for (msg of errorMessage; track msg) {
+        <p class="error-danger-text"> {{ msg }} </p>
+      }
+    </div>
+  }
+  <div class="mb-3">
+    <label for="login" class="form-label fieldLabel" for="email">Email</label>
+    <input [(ngModel)]="authRequest.email" class="form-control fieldInput" type="email" id="login" placeholder="name@example.com"
+      [class.error-input]="errors.email">
+    <span class="error" *ngIf="errors.email">{{ errors.email }}</span>
+  </div>
+  <div class="mb-3 password-div">
+    <label class="form-label fieldLabel" for="password">Password</label>
+    <input class="form-control fieldInput password-input" [type]="showPassword ? 'text' : 'password'" placeholder="Enter Password" id="password"
+      [(ngModel)]="authRequest.password" [class.error-input]="errors.password">
+    <span class="eye-icon" (click)="hideShowPassword('showPassword')">
+      <i class="material-icons">{{ showPassword ? 'visibility_off' : 'visibility' }}</i>
+    </span>
+    <span class="error" *ngIf="errors.password">{{ errors.password }}</span>
+  </div>
+  <button class="btn btn-primary" (click)="signin()" [disabled]="loading">
+    {{ loading ? 'Signing in...' : 'Sign In' }}
+  </button>
+  <p class="switch">Don't have an account? <a (click)="register()">Sign Up</a></p>
+</div>

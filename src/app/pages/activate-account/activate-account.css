@@ -1,0 +1,12 @@
+.container {
+    margin: 15% 0% 0% 35%;
+    color: white;
+}
+
+.code-input-container {
+    color: white !important;
+}
+
+.activate-error {
+    color: red;
+}
