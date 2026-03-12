@@ -11,6 +11,30 @@
     }
   ],
   "paths": {
+    "/stocks/price": {
+      "post": {
+        "tags": ["stock-price-controller"],
+        "operationId": "getStockPrice",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/StockPriceRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/StockPriceResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/register": {
       "post": {
         "tags": ["Authentication"],
@@ -18,9 +42,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RegistrationRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/RegistrationRequest" }
             }
           },
           "required": true
@@ -29,10 +51,8 @@
           "202": {
             "description": "Accepted",
             "content": {
-              "*/*": {
-                "schema": {
-                  "type": "object"
-                }
+              "application/json": {
+                "schema": { "type": "object" }
               }
             }
           }
@@ -46,9 +66,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AuthenticationRequest"
-              }
+              "schema": { "$ref": "#/components/schemas/AuthenticationRequest" }
             }
           },
           "required": true
@@ -57,12 +75,94 @@
           "200": {
             "description": "OK",
             "content": {
-              "*/*": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthenticationResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/alerts": {
+      "get": {
+        "tags": ["alerts-controller"],
+        "operationId": "getUserAlerts",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthenticationResponse"
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/AlertsResponse" }
                 }
               }
             }
+          }
+        }
+      },
+      "post": {
+        "tags": ["alerts-controller"],
+        "operationId": "createAlert",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AlertsRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AlertsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/alerts/{id}/toggle": {
+      "patch": {
+        "tags": ["alerts-controller"],
+        "operationId": "toggleAlert",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AlertsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/alerts/{id}": {
+      "delete": {
+        "tags": ["alerts-controller"],
+        "operationId": "deleteAlert",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
           }
         }
       }
@@ -76,21 +176,33 @@
             "name": "token",
             "in": "query",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "schema": { "type": "string" }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          }
+          "200": { "description": "OK" }
         }
       }
     }
   },
   "components": {
     "schemas": {
+      "StockPriceRequest": {
+        "type": "object",
+        "properties": {
+          "ticker": { "type": "string" }
+        }
+      },
+      "StockPriceResponse": {
+        "type": "object",
+        "properties": {
+          "symbol": { "type": "string" },
+          "name": { "type": "string" },
+          "exchange": { "type": "string" },
+          "price": { "type": "string" },
+          "datetime": { "type": "string" }
+        }
+      },
       "RegistrationRequest": {
         "required": ["email", "firstname", "lastname", "password"],
         "type": "object",
@@ -98,11 +210,7 @@
           "firstname": { "type": "string" },
           "lastname": { "type": "string" },
           "email": { "type": "string" },
-          "password": {
-            "maxLength": 2147483647,
-            "minLength": 8,
-            "type": "string"
-          }
+          "password": { "maxLength": 2147483647, "minLength": 8, "type": "string" }
         }
       },
       "AuthenticationRequest": {
@@ -110,17 +218,35 @@
         "type": "object",
         "properties": {
           "email": { "type": "string" },
-          "password": {
-            "maxLength": 2147483647,
-            "minLength": 8,
-            "type": "string"
-          }
+          "password": { "maxLength": 2147483647, "minLength": 8, "type": "string" }
         }
       },
       "AuthenticationResponse": {
         "type": "object",
         "properties": {
           "token": { "type": "string" }
+        }
+      },
+      "AlertsRequest": {
+        "required": ["alertType", "notificationChannel", "threshold", "ticker"],
+        "type": "object",
+        "properties": {
+          "ticker": { "type": "string" },
+          "alertType": { "type": "string", "enum": ["DIP", "RISE"] },
+          "threshold": { "type": "number", "format": "double" },
+          "notificationChannel": { "type": "string", "enum": ["EMAIL", "WHATSAPP", "BOTH"] }
+        }
+      },
+      "AlertsResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "ticker": { "type": "string" },
+          "alertType": { "type": "string", "enum": ["DIP", "RISE"] },
+          "threshold": { "type": "number", "format": "double" },
+          "notificationChannel": { "type": "string", "enum": ["EMAIL", "WHATSAPP", "BOTH"] },
+          "active": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" }
         }
       }
     }

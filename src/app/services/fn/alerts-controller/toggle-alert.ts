@@ -7,17 +7,16 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { RegistrationRequest } from '../../models/registration-request';
+import { AlertsResponse } from '../../models/alerts-response';
 
-export interface Register$Params {
-      body: RegistrationRequest
+export interface ToggleAlert$Params {
+  id: number;
 }
 
-export function register(http: HttpClient, rootUrl: string, params: Register$Params, context?: HttpContext): Observable<StrictHttpResponse<{
-}>> {
-  const rb = new RequestBuilder(rootUrl, register.PATH, 'post');
+export function toggleAlert(http: HttpClient, rootUrl: string, params: ToggleAlert$Params, context?: HttpContext): Observable<StrictHttpResponse<AlertsResponse>> {
+  const rb = new RequestBuilder(rootUrl, toggleAlert.PATH, 'patch');
   if (params) {
-    rb.body(params.body, 'application/json');
+    rb.path('id', params.id, {});
   }
 
   return http.request(
@@ -25,10 +24,9 @@ export function register(http: HttpClient, rootUrl: string, params: Register$Par
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<{
-      }>;
+      return r as StrictHttpResponse<AlertsResponse>;
     })
   );
 }
 
-register.PATH = '/auth/register';
+toggleAlert.PATH = '/alerts/{id}/toggle';

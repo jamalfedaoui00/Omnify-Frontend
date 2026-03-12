@@ -1,0 +1,108 @@
+<div class="page-container">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">STOCK ALERTS</h1>
+            <p class="page-subtitle">Get notified when a stock hits your target</p>
+        </div>
+        <span class="badge">{{ alerts.length }} Active</span>
+    </div>
+
+    <div class="alerts-layout">
+
+        <div class="card">
+            <div class="card-title">
+                <span class="material-icons">add_alert</span>
+                Create New Alert
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Ticker Symbol</label>
+                <input class="form-input" type="text" placeholder="e.g. TSLA, AAPL, NVDA" [(ngModel)]="alertForm.ticker"
+                    (input)="alertForm.ticker = alertForm.ticker.toUpperCase()">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Alert Type</label>
+                <div class="toggle-group">
+                    <button class="toggle-btn" [class.selected]="alertForm.alertType === 'DIP'"
+                        (click)="selectAlertType('DIP')">
+                        <span class="material-icons">trending_down</span> Price Dip
+                    </button>
+                    <button class="toggle-btn" [class.selected]="alertForm.alertType === 'RISE'"
+                        (click)="selectAlertType('RISE')">
+                        <span class="material-icons">trending_up</span> Price Rise
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Threshold</label>
+                <div class="input-suffix-wrap">
+                    <input class="form-input" type="number" placeholder="10" [(ngModel)]="alertForm.threshold">
+                    <span class="input-suffix">%</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Notify Via</label>
+                <div class="toggle-group">
+                    <button class="toggle-btn" [class.selected]="alertForm.notificationChannel === 'EMAIL'"
+                        (click)="selectChannel('EMAIL')">
+                        <span class="material-icons">mail</span> Email
+                    </button>
+                    <button class="toggle-btn" [class.selected]="alertForm.notificationChannel === 'WHATSAPP'"
+                        (click)="selectChannel('WHATSAPP')">
+                        <span class="material-icons">chat</span> WhatsApp
+                    </button>
+                    <button class="toggle-btn" [class.selected]="alertForm.notificationChannel === 'BOTH'"
+                        (click)="selectChannel('BOTH')">
+                        <span class="material-icons">done_all</span> Both
+                    </button>
+                </div>
+            </div>
+
+            <button class="btn-primary" (click)="createAlert()">
+                <span class="material-icons">add</span>
+                Create Alert
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <span class="material-icons">list</span>
+                Active Alerts
+            </div>
+
+            @if (alerts.length === 0) {
+            <div class="empty-state">
+                <span class="material-icons">notifications_off</span>
+                <p>No alerts yet. Create one to get started.</p>
+            </div>
+            }
+
+            <div class="alert-list alert-list-color">
+                @for (alert of alerts; track alert.ticker) {
+                <div class="alert-item" [class.inactive]="!alert.active">
+                    <div class="ticker-badge">{{ alert.ticker }}</div>
+                    <div class="alert-info">
+                        <div class="alert-name">{{ alert.ticker }}</div>
+                        <div class="alert-detail">
+                            {{ alert.alertType === 'DIP' ? 'Dip' : 'Rise' }} by {{ alert.threshold }}%
+                            · {{ alert.notificationChannel }}
+                        </div>
+                    </div>
+                    <div class="alert-actions">
+                        <div class="toggle" [class.on]="alert.active" (click)="toggleAlert(alert)">
+                            <div class="toggle-thumb"></div>
+                        </div>
+                        <span class="material-icons delete-btn" (click)="deleteAlert(alert)">
+                            delete
+                        </span>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>

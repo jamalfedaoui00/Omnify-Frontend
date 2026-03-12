@@ -7,15 +7,15 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { RegistrationRequest } from '../../models/registration-request';
+import { StockPriceRequest } from '../../models/stock-price-request';
+import { StockPriceResponse } from '../../models/stock-price-response';
 
-export interface Register$Params {
-      body: RegistrationRequest
+export interface GetStockPrice$Params {
+      body: StockPriceRequest
 }
 
-export function register(http: HttpClient, rootUrl: string, params: Register$Params, context?: HttpContext): Observable<StrictHttpResponse<{
-}>> {
-  const rb = new RequestBuilder(rootUrl, register.PATH, 'post');
+export function getStockPrice(http: HttpClient, rootUrl: string, params: GetStockPrice$Params, context?: HttpContext): Observable<StrictHttpResponse<StockPriceResponse>> {
+  const rb = new RequestBuilder(rootUrl, getStockPrice.PATH, 'post');
   if (params) {
     rb.body(params.body, 'application/json');
   }
@@ -25,10 +25,9 @@ export function register(http: HttpClient, rootUrl: string, params: Register$Par
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<{
-      }>;
+      return r as StrictHttpResponse<StockPriceResponse>;
     })
   );
 }
 
-register.PATH = '/auth/register';
+getStockPrice.PATH = '/stocks/price';
